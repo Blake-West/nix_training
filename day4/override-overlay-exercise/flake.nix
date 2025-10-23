@@ -6,11 +6,20 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = { self, nixpkgs, flake-parts }: {
+  outputs = { self, nixpkgs, flake-parts }@inputs: flake-parts.lib.mkFlake { inherit inputs; } {
+    systems = [ "x86_64-linux" ];
 
-    packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-
+    perSystem = {pkgs, system, ...} : {
+        _module.args.pkgs = import self.inputs.nixpkgs {
+          inherit system;
+          overlays = [(import ./overlay.nix)];
+          config.allowUnfree = true;
+        };
+      packages = {
+        myapp = (pkgs.callPackage ./app { }).overrideAttrs {meta = {
+          mainProgram = "MyApp";
+        };};
+      };
+    };
   };
 }
