@@ -12,7 +12,7 @@
     perSystem = {pkgs, system, ...} : {
         _module.args.pkgs = import self.inputs.nixpkgs {
           inherit system;
-          overlays = [(import ./overlay.nix)];
+          overlays = [(import ./overlay.nix) (import ./overlay-patched.nix)];
           config.allowUnfree = true;
         };
       packages = {
