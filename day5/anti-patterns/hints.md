@@ -1,0 +1,20 @@
+
+- `hello-nix.nix`:
+  - source closure contains everything. changing anything leads to recompilation
+  - `with` is used on the whole file
+  - buildInputs won't work with cross compilation
+  - broken normal form - can't easily use `override` here
+- `release.nix`
+  - nixpkgs are not pinned
+  - `rec` antipattern is used
+  - `bye-nix` overrides the whole patchPhase destructively
+  - not using callPackage - can't use `override`
+- `shell.nix`
+  - global `with` antipattern
+  - re-import of unpinned (and potentially different) nixpkgs
+  - treefmt-nix is not pinned
+  - treefmt-nix is also not hash-checked
+  - if CI builds release.nix, devShell won't be built and cached
+  - if CI builds release.nix, no formatting check is performed
+- `default.nix`
+  - "accidental singleton" pkgs re-import pattern
